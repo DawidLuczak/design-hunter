@@ -1,53 +1,41 @@
 package sample.workspace;
 
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Ellipse;
-
-import java.util.concurrent.atomic.AtomicReference;
+import javafx.scene.layout.StackPane;
 
 public class Layer {
 	private String title;
-	private Canvas canvas, viewMiniCanvas;
-	private GraphicsContext graphicsContext, viewMiniGraphicsContext;
+	private StackPane stackPane;
+	private Content activeContent;
 	
-	Layer(String title, double width, double height){
+	public Layer(String title){
 		this.title = title;
-		this.canvas = new Canvas(width, height);
-		this.graphicsContext = canvas.getGraphicsContext2D();
-		this.viewMiniCanvas = new Canvas(20, 20);
-		this.viewMiniGraphicsContext = viewMiniCanvas.getGraphicsContext2D();
+		this.stackPane = new StackPane();
 	}
 	
-	protected void setFill(Color color){
-		graphicsContext.setFill(color);
+	public void addContentElement(Content content){
+		this.stackPane.getChildren().add(content);
+		this.activeContent = content;
 	}
 	
-	protected void setStroke(Color color){
-		graphicsContext.setStroke(color);
+	public void removeContentElement(){
+		if (activeContent != null)
+			stackPane.getChildren().remove(activeContent);
 	}
 	
 	public String getTitle() {
 		return title;
 	}
 	
-	public Canvas getCanvas() {
-		return canvas;
+	
+	public StackPane getStackPane() {
+		return stackPane;
 	}
 	
-	public GraphicsContext getGraphicsContext() {
-		return graphicsContext;
+	public Content getActiveContent() {
+		return activeContent;
 	}
 	
-	public Canvas getViewMiniCanvas() {
-		return viewMiniCanvas;
+	public void setActiveContent(Content activeContent) {
+		this.activeContent = activeContent;
 	}
-	
-	public GraphicsContext getViewMiniGraphicsContext() {
-		return viewMiniGraphicsContext;
-	}
-	
 }
