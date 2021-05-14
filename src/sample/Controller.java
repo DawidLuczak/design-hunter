@@ -41,7 +41,7 @@ public class Controller implements ControllerEvents{
 	
 	@FXML private AnchorPane content;
 	
-	@FXML private MenuItem menuFileNew;
+	@FXML private MenuItem menuFileNew, menuUndo;
 	
 	@FXML private TabPane tabPanel;
 	
@@ -54,6 +54,10 @@ public class Controller implements ControllerEvents{
 	@FXML private Polygon triangleIcon;
 	@FXML private Line lineIcon;
 	@FXML private CubicCurve brushIcon;
+	@FXML private ToggleButton getColorButton;
+	
+	@FXML
+	private Layer lay;
 	
 	
 /*	INIT CONTROLLER  */
@@ -67,23 +71,25 @@ public class Controller implements ControllerEvents{
 		assert lineIcon != null : "fx:id=\"lineIcon\" was not injected: check your FXML file 'sample.fxml'.";
 		assert brushIcon != null : "fx:id=\"brushIcon\" was not injected: check your FXML file 'sample.fxml'.";
 		
-		
 		assert colorPickerA != null : "fx:id=\"color1\" was not injected: check your FXML file 'sample.fxml'.";
 		assert colorPickerB != null : "fx:id=\"color2\" was not injected: check your FXML file 'sample.fxml'.";
 		assert opacitySpinnerA != null : "fx:id=\"opacitySpinnerA\" was not injected: check your FXML file 'sample.fxml'.";
 		assert opacitySpinnerB != null : "fx:id=\"opacitySpinnerB\" was not injected: check your FXML file 'sample.fxml'.";
 		assert strokeWidthSpinner != null : "fx:id=\"strokeWidthSpinner\" was not injected: check your FXML file 'sample.fxml'.";
+		
+		assert getColorButton != null : "fx:id=\"getColorButton\" was not injected: check your FXML file 'sample.fxml'.";
+		
 		assert content != null : "fx:id=\"content\" was not injected: check your FXML file 'sample.fxml'.";
 		assert x1 != null : "fx:id=\"x1\" was not injected: check your FXML file 'sample.fxml'.";
 		assert x2 != null : "fx:id=\"x2\" was not injected: check your FXML file 'sample.fxml'.";
 		assert x3 != null : "fx:id=\"x3\" was not injected: check your FXML file 'sample.fxml'.";
 		assert x4 != null : "fx:id=\"x4\" was not injected: check your FXML file 'sample.fxml'.";
 		assert menuFileNew != null : "fx:id=\"menuFileNew\" was not injected: check your FXML file 'sample.fxml'.";
+		assert menuUndo != null : "fx:id=\"menuUndo\" was not injected: check your FXML file 'sample.fxml'.";
 		assert tabPanel != null : "fx:id=\"tabPanel\" was not injected: check your FXML file 'sample.fxml'.";
 		assert layerList != null : "fx:id=\"layerList\" was not injected: check your FXML file 'sample.fxml'.";
 		assert addLayerButton != null : "fx:id=\"addLayerButton\" was not injected: check your FXML file 'sample.fxml'.";
 		assert fillTypeBox != null : "fx:id=\"fillTypeBox\" was not injected: check your FXML file 'sample.fxml'.";
-		
 		
 		ControllerInterface.layerViewList(this);
 		initLayoutEvents();
@@ -100,6 +106,9 @@ public class Controller implements ControllerEvents{
 	
 	private void initLayoutEvents(){
 		menuFileNew.setOnAction(actionEvent -> new NewFilePanel(this));
+		menuUndo.setOnAction(actionEvent -> {
+			activeWorkspace.getWorkspaceContent().getActiveLayer().removeContentElement();
+		});
 		tabPanel.getSelectionModel().selectedIndexProperty().addListener(new ChangeWorkspace(this));
 		addLayerButton.setOnAction(this::addLayerEvent);
 	}
@@ -115,6 +124,13 @@ public class Controller implements ControllerEvents{
 		triangleIcon.setOnMouseClicked(event -> ShapeInterface.setShape(this, Shapes.TRIANGLE));
 		lineIcon.setOnMouseClicked(event -> ShapeInterface.setShape(this, Shapes.LINE));
 		brushIcon.setOnMouseClicked(event -> ShapeInterface.setShape(this, Shapes.BRUSH));
+		getColorButton.setOnAction(actionEvent -> {
+			if (getColorButton.isSelected()) {
+				mouseDraftsmanEvents.getColorsMouseListeners();
+			}
+			else
+				mouseDraftsmanEvents.addClickingListeners();
+		});
 	}
 	
 	
@@ -237,7 +253,6 @@ public class Controller implements ControllerEvents{
 	public void addLayerEvent(ActionEvent event) {
 		if (activeWorkspace != null) {
 			activeWorkspace.getWorkspaceContent().addDefaultLayer();
-			activeWorkspace.getWorkspaceContent().setColorsToGraphicsContext();
 			layerList.refresh();
 		}
 	}
