@@ -1,6 +1,7 @@
 package sample.menu;
 
 import javafx.event.Event;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import sample.Controller;
@@ -60,6 +61,7 @@ public class NewFilePanel {
 	private void createNewWorkspace(Controller controller){
 		Workspace workspace = new Workspace(title.getText(), Integer.parseInt(width.getText()), Integer.parseInt(height.getText()));
 		ControllerInterface.addToWorkspaceList(controller, workspace);
+		workspace.getWorkspaceContent().getActiveLayer().addContentElement(new Canvas(workspace.getWidth(), workspace.getHeight()));
 	}
 	
 	
