@@ -8,7 +8,6 @@ public class LayersListView extends ListCell<Layer> {
 	public void updateItem(Layer item, boolean empty) {
 		super.updateItem(item, empty);
 		if (item != null) {
-			setGraphic(item.getViewMiniCanvas());
 			setText(item.getTitle());
 		}
 	}
