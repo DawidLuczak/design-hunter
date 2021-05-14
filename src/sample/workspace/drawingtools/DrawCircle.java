@@ -1,5 +1,6 @@
 package sample.workspace.drawingtools;
 
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Ellipse;
 import sample.workspace.drawingtools.shapes.FillType;
@@ -18,6 +19,7 @@ public interface DrawCircle {
 		if (fillType == null) {
 			fillType = FillType.FULL;
 		}
+		
 		Ellipse ellipse = new Ellipse(pointA.getX(), pointA.getY(), pointA.distanceX(pointB), pointA.distanceY(pointB));
 		if (fillType.equals(FillType.FILL)) {
 			circleFill(graphicsContext, ellipse);
