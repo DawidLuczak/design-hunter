@@ -1,25 +1,22 @@
 package sample.workspace.drawingtools;
 
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
-import sample.workspace.Workspace;
-import sample.workspace.drawingtools.Point;
 
 public interface Brush {
 	
-	static void mouseDragEnter(Workspace workspace){
-		workspace.getWorkspaceContent().getActiveLayer().getGraphicsContext().beginPath();
+	static void mouseDragEnter(Canvas content){
+		content.getGraphicsContext2D().beginPath();
 	}
 	
-	static void mouseDragExit(Workspace workspace){
-		workspace.getWorkspaceContent().getActiveLayer().getGraphicsContext().closePath();
+	static void mouseDragExit(Canvas content){
+		content.getGraphicsContext2D().closePath();
 	}
 	
-	static void mouseDragged(MouseEvent event, Workspace workspace) {
-		workspace.getWorkspaceContent().getActiveLayer().getGraphicsContext().lineTo(event.getX(), event.getY());
-		workspace.getWorkspaceContent().getActiveLayer().getGraphicsContext().stroke();
+	static void mouseDragged(MouseEvent event, Canvas content) {
+		content.resize(content.getLayoutX() + event.getX(), content.getLayoutY() + event.getY());
+		content.getGraphicsContext2D().lineTo(event.getX(), event.getY());
+		content.getGraphicsContext2D().stroke();
 	}
 	
 	void startUsingBrush();
