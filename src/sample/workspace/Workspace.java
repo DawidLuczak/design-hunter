@@ -1,6 +1,5 @@
 package sample.workspace;
 
-
 public class Workspace {
 	private String title;
 	private int height, width;
@@ -10,7 +9,7 @@ public class Workspace {
 		this.title = title;
 		this.height = height;
 		this.width = width;
-		this.workspaceContent = new WorkspaceContent(this.width, this.height);
+		this.workspaceContent = new WorkspaceContent(this);
 	}
 	
 	public WorkspaceContent getWorkspaceContent() {
@@ -21,5 +20,12 @@ public class Workspace {
 		return title;
 	}
 	
-
+	public int getHeight() {
+		return height;
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+	
 }
