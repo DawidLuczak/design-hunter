@@ -9,23 +9,29 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
 import javafx.scene.text.Font;
+import sample.auxiliary.ChangeWorkspace;
+import sample.auxiliary.ControllerEvents;
+import sample.auxiliary.ControllerInterface;
+import sample.item.ItemConstructor;
+import sample.library.Brush;
+import sample.library.Rubber;
+import sample.library.event.DrawingTool;
+import sample.library.geometry.draw.DrawCircle;
+import sample.library.geometry.draw.DrawLine;
+import sample.library.geometry.draw.DrawRectangle;
+import sample.library.geometry.draw.Tool;
 import sample.menu.NewFilePanel;
-import sample.workspace.Layer;
-import sample.workspace.MouseDraftsmanEvents;
-import sample.workspace.Workspace;
-import sample.workspace.drawingtools.shapes.FillType;
-import sample.workspace.drawingtools.shapes.ShapeInterface;
-import sample.workspace.drawingtools.shapes.Shapes;
+import sample.workspace.*;
+import sample.library.FillType;
+import sample.workspace.content.Layer;
 
-public class Controller implements ControllerEvents{
+public class Controller implements ControllerEvents {
 
 /*	DECLARATIONS  */
 	
 	private List<Workspace> workspaceList;
-	private Workspace activeWorkspace;
-	private MouseDraftsmanEvents mouseDraftsmanEvents;
+	private Workspace actualWorkspace;
 	
 	@FXML private ResourceBundle resources;
 	@FXML private URL location;
@@ -49,15 +55,15 @@ public class Controller implements ControllerEvents{
 	@FXML private Button addLayerButton;
 	@FXML private ChoiceBox<FillType> fillTypeBox;
 	
-	@FXML private Circle circleIcon;
-	@FXML private Rectangle rectangleIcon;
-	@FXML private Polygon triangleIcon;
-	@FXML private Line lineIcon;
-	@FXML private CubicCurve brushIcon;
+	@FXML private ToggleButton rectangleButton;
+	@FXML private ToggleButton circleButton;
+	@FXML private ToggleButton triangleButton;
+	@FXML private ToggleButton lineButton;
+	@FXML private ToggleButton brushButton;
 	@FXML private ToggleButton getColorButton;
+	@FXML private ToggleButton rubberButton;
 	
-	@FXML
-	private Layer lay;
+	private DrawingTool myTool;
 	
 	
 /*	INIT CONTROLLER  */
@@ -65,11 +71,13 @@ public class Controller implements ControllerEvents{
 	
 	@FXML
 	void initialize() {
-		assert circleIcon != null : "fx:id=\"circleIcon\" was not injected: check your FXML file 'sample.fxml'.";
-		assert rectangleIcon != null : "fx:id=\"rectangleIcon\" was not injected: check your FXML file 'sample.fxml'.";
-		assert triangleIcon != null : "fx:id=\"triangleIcon\" was not injected: check your FXML file 'sample.fxml'.";
-		assert lineIcon != null : "fx:id=\"lineIcon\" was not injected: check your FXML file 'sample.fxml'.";
-		assert brushIcon != null : "fx:id=\"brushIcon\" was not injected: check your FXML file 'sample.fxml'.";
+		assert rectangleButton != null : "fx:id=\"rectangleButton\" was not injected: check your FXML file 'sample.fxml'.";
+		assert circleButton != null : "fx:id=\"circleButton\" was not injected: check your FXML file 'sample.fxml'.";
+		assert triangleButton != null : "fx:id=\"triangleButton\" was not injected: check your FXML file 'sample.fxml'.";
+		assert lineButton != null : "fx:id=\"lineButton\" was not injected: check your FXML file 'sample.fxml'.";
+		assert brushButton != null : "fx:id=\"brushButton\" was not injected: check your FXML file 'sample.fxml'.";
+		assert rubberButton != null : "fx:id=\"rubberButton\" was not injected: check your FXML file 'sample.fxml'.";
+		
 		
 		assert colorPickerA != null : "fx:id=\"color1\" was not injected: check your FXML file 'sample.fxml'.";
 		assert colorPickerB != null : "fx:id=\"color2\" was not injected: check your FXML file 'sample.fxml'.";
@@ -94,7 +102,6 @@ public class Controller implements ControllerEvents{
 		ControllerInterface.layerViewList(this);
 		initLayoutEvents();
 		initContentPropertyEvents();
-		initShapeToolsEvents();
 		constructFillTypesBox();
 		constructOpacitySpinners();
 		constructLineWidthSpinner();
@@ -105,42 +112,64 @@ public class Controller implements ControllerEvents{
 	
 	
 	private void initLayoutEvents(){
-		menuFileNew.setOnAction(actionEvent -> new NewFilePanel(this));
-		menuUndo.setOnAction(actionEvent -> {
-			activeWorkspace.getWorkspaceContent().getActiveLayer().removeContentElement();
-		});
-		tabPanel.getSelectionModel().selectedIndexProperty().addListener(new ChangeWorkspace(this));
-		addLayerButton.setOnAction(this::addLayerEvent);
+		menuFileNew.setOnAction(
+				actionEvent ->
+						new NewFilePanel(
+								this
+						)
+		);
+		menuUndo.setOnAction(
+				actionEvent ->
+						actualWorkspace.getWorkspaceContent().getActiveLayer().removeContentElement()
+		);
+		tabPanel.getSelectionModel().selectedIndexProperty().addListener(
+				new ChangeWorkspace(
+						this
+				)
+		);
+		addLayerButton.setOnAction(
+				this::addLayerEvent
+		);
 	}
+	
 	
 	private void initContentPropertyEvents(){
-		colorPickerA.setOnAction(this::setColorFirstEvent);
-		colorPickerB.setOnAction(this::setColorSecondaryEvent);
+		colorPickerA.setOnAction(
+				this::setColorFirstEvent
+		);
+		colorPickerB.setOnAction(
+				this::setColorSecondaryEvent
+		);
 	}
 	
-	private void initShapeToolsEvents(){
-		rectangleIcon.setOnMouseClicked(event -> ShapeInterface.setShape(this, Shapes.RECTANGLE));
-		circleIcon.setOnMouseClicked(event -> ShapeInterface.setShape(this, Shapes.CIRCLE));
-		triangleIcon.setOnMouseClicked(event -> ShapeInterface.setShape(this, Shapes.TRIANGLE));
-		lineIcon.setOnMouseClicked(event -> ShapeInterface.setShape(this, Shapes.LINE));
-		brushIcon.setOnMouseClicked(event -> ShapeInterface.setShape(this, Shapes.BRUSH));
-		getColorButton.setOnAction(actionEvent -> {
-			if (getColorButton.isSelected()) {
-				mouseDraftsmanEvents.getColorsMouseListeners();
-			}
-			else
-				mouseDraftsmanEvents.addClickingListeners();
-		});
+	
+	public void initShapeToolsEvents(){
+		setToolButtonEvent(
+				circleButton,
+				Tool.CIRCLE
+		);
+		setToolButtonEvent(
+				rectangleButton,
+				Tool.RECTANGLE
+		);
+		setToolButtonEvent(
+				lineButton,
+				Tool.LINE
+		);
+		setToolButtonEvent(
+				brushButton,
+				Tool.BRUSH
+		);
+		setToolButtonEvent(
+				rubberButton,
+				Tool.RUBBER
+		);
 	}
 	
 	
 /*	GETTERS & SETTERS  */
 	
-	
-	public void setMouseEvents(MouseDraftsmanEvents mousePositionEvents) {
-		this.mouseDraftsmanEvents = mousePositionEvents;
-	}
-	
+
 	public List<Workspace> getWorkspaceList() {
 		return workspaceList;
 	}
@@ -149,12 +178,12 @@ public class Controller implements ControllerEvents{
 		this.workspaceList = workspaceList;
 	}
 	
-	public Workspace getActiveWorkspace() {
-		return activeWorkspace;
+	public Workspace getActualWorkspace() {
+		return actualWorkspace;
 	}
 	
-	public void setActiveWorkspace(Workspace activeWorkspace) {
-		this.activeWorkspace = activeWorkspace;
+	public void setActualWorkspace(Workspace actualWorkspace) {
+		this.actualWorkspace = actualWorkspace;
 	}
 	
 	public TabPane getTabPanel() {
@@ -165,70 +194,203 @@ public class Controller implements ControllerEvents{
 		return layerList;
 	}
 	
-	public MouseDraftsmanEvents getMouseDraftsmanEvents() {
-		return mouseDraftsmanEvents;
-	}
 	
 	/*	MY SETTERS  */
 	
-	public void setWorkspaceToolsProperties(Workspace workspace){
-		setColorPickersValues(workspace);
-		setOpacitySpinnersValues(workspace);
-		setLineWidthSpinnerValue(workspace);
+	private void toolSwitch
+			(
+					Tool tool
+			)
+	{
+		switch (tool)
+		{
+			case RECTANGLE ->
+					myTool = new DrawRectangle(
+							actualWorkspace
+					);
+			case CIRCLE ->
+					myTool = new DrawCircle(
+							actualWorkspace
+					);
+			case LINE ->
+					myTool = new DrawLine(
+							actualWorkspace
+					);
+			case BRUSH ->
+					myTool = new Brush(
+							actualWorkspace
+					);
+			case RUBBER ->
+					myTool = new Rubber(
+							actualWorkspace
+					);
+		}
 	}
 	
-	private void setColorPickersValues(Workspace workspace){
-		colorPickerA.setValue(workspace.getWorkspaceContent().getColorFirst());
-		colorPickerB.setValue(workspace.getWorkspaceContent().getColorSecondary());
+	
+	private void setToolButtonEvent
+			(
+					ToggleButton button,
+					Tool tool
+			)
+	{
+		button.setOnAction(
+				actionEvent ->
+				{
+					if (actualWorkspace != null)
+					{
+						if (button.isSelected())
+						{
+							toolSwitch(
+									tool
+							);
+						}
+
+					}
+				}
+		);
 	}
 	
-	private void setOpacitySpinnersValues(Workspace workspace){
-		opacitySpinnerA.getValueFactory().setValue(workspace.getWorkspaceContent().getColorFirst().getOpacity());
-		opacitySpinnerB.getValueFactory().setValue(workspace.getWorkspaceContent().getColorSecondary().getOpacity());
+	
+	public void setWorkspaceToolsProperties
+			(
+					Workspace workspace
+			)
+	{
+		setColorPickersValues(
+				workspace
+		);
+		setOpacitySpinnersValues(
+				workspace
+		);
+		setLineWidthSpinnerValue(
+				workspace
+		);
 	}
 	
-	private void setLineWidthSpinnerValue(Workspace workspace){
-		strokeWidthSpinner.getValueFactory().valueProperty().setValue(workspace.getWorkspaceContent().getLineWidth());
+	
+	private void setColorPickersValues
+			(
+					Workspace workspace
+			)
+	{
+		colorPickerA.setValue(
+				workspace.getWorkspaceContent().getColorFirst()
+		);
+		colorPickerB.setValue(
+				workspace.getWorkspaceContent().getColorSecondary()
+		);
 	}
+	
+	
+	private void setOpacitySpinnersValues
+			(
+					Workspace workspace
+			)
+	{
+		opacitySpinnerA.getValueFactory().setValue(
+				workspace.getWorkspaceContent().getColorFirst().getOpacity()
+		);
+		opacitySpinnerB.getValueFactory().setValue(
+				workspace.getWorkspaceContent().getColorSecondary().getOpacity()
+		);
+	}
+	
+	
+	private void setLineWidthSpinnerValue
+			(
+					Workspace workspace
+			)
+	{
+		strokeWidthSpinner.getValueFactory().valueProperty().setValue(
+				workspace.getWorkspaceContent().getLineWidth()
+		);
+	}
+
 	
 /*	ITEMS CONSTRUCTORS  */
 	
 	
-	private void constructFillTypesBox(){
-		fillTypeBox.setItems(FXCollections.observableArrayList(FillType.FULL, FillType.STROKE, FillType.FILL));
-		fillTypeBox.getSelectionModel().selectedItemProperty().addListener((observableValue, fillType, selectedFillType) -> {
-			if (activeWorkspace != null)
-				activeWorkspace.getWorkspaceContent().setFillType(selectedFillType);
-		});
+	private void constructFillTypesBox()
+	{
+		fillTypeBox.setItems(
+				FXCollections.observableArrayList(
+						FillType.FULL, FillType.STROKE, FillType.FILL
+				)
+		);
+		
+		fillTypeBox.getSelectionModel().selectedItemProperty().addListener(
+				(observableValue, fillType, selectedFillType) ->
+				{
+					if (actualWorkspace != null && myTool != null)
+					{
+							actualWorkspace.getWorkspaceContent().setFillType(
+									selectedFillType
+							);
+					}
+				});
 		fillTypeBox.getSelectionModel().selectFirst();
 	}
 	
-	private void constructOpacitySpinners(){
-		ControllerItemConstructor.constructDoubleSpinner(opacitySpinnerA, 0, 1, 0.01);
-		ControllerItemConstructor.constructDoubleSpinner(opacitySpinnerB, 0, 1, 0.01);
+	
+	private void constructOpacitySpinners()
+	{
+		ItemConstructor.constructDoubleSpinner(
+				opacitySpinnerA, 0, 1, 0.01
+		);
+		ItemConstructor.constructDoubleSpinner(
+				opacitySpinnerB, 0, 1, 0.01
+		);
 		
-		opacitySpinnerA.getValueFactory().setValue(1d);
-		opacitySpinnerB.getValueFactory().setValue(1d);
+		opacitySpinnerA.getValueFactory().setValue(
+				1d
+		);
+		opacitySpinnerB.getValueFactory().setValue(
+				1d
+		);
 		
-		opacitySpinnerA.getValueFactory().valueProperty().addListener((observableValue, aDouble, t1) -> {
-			if (activeWorkspace != null)
-				activeWorkspace.getWorkspaceContent().setColorFirst(activeWorkspace.getWorkspaceContent().getColorFirst(), t1);
-		});
-		opacitySpinnerB.getValueFactory().valueProperty().addListener((observableValue, aDouble, t1) -> {
-			if (activeWorkspace != null)
-				activeWorkspace.getWorkspaceContent().setColorSecondary(activeWorkspace.getWorkspaceContent().getColorSecondary(), t1);
-		});
+		opacitySpinnerA.getValueFactory().valueProperty().addListener(
+				(observableValue, aDouble, newValue) ->
+				{
+					if (actualWorkspace != null)
+					{
+						actualWorkspace.getWorkspaceContent().setColorFirst(
+								actualWorkspace.getWorkspaceContent().getColorFirst(), newValue
+						);
+					}
+				});
+		
+		opacitySpinnerB.getValueFactory().valueProperty().addListener(
+				(observableValue, aDouble, newValue) ->
+				{
+					if (actualWorkspace != null)
+					{
+						actualWorkspace.getWorkspaceContent().setColorSecondary(
+								actualWorkspace.getWorkspaceContent().getColorSecondary(), newValue
+						);
+					}
+				});
 	}
 	
-	private void constructLineWidthSpinner(){
-		ControllerItemConstructor.constructDoubleSpinner(strokeWidthSpinner, 0, 100, 0.1);
+	
+	private void constructLineWidthSpinner()
+	{
+		ItemConstructor.constructDoubleSpinner(
+				strokeWidthSpinner, 0, 100, 0.1
+		);
 		
 		strokeWidthSpinner.getValueFactory().setValue(1d);
 		
-		strokeWidthSpinner.getValueFactory().valueProperty().addListener((observableValue, aDouble, t1) -> {
-			if (activeWorkspace != null)
-				activeWorkspace.getWorkspaceContent().setLineWidth(t1);
-		});
+		strokeWidthSpinner.getValueFactory().valueProperty().addListener(
+				(observableValue, aDouble, t1) ->
+				{
+					if (actualWorkspace != null)
+					{
+						actualWorkspace.getWorkspaceContent().setLineWidth(
+								t1
+						);
+					}
+				});
 	}
 	
 	
@@ -236,23 +398,44 @@ public class Controller implements ControllerEvents{
 	
 	
 	@Override
-	public void setColorFirstEvent(ActionEvent event) {
-		if (activeWorkspace != null) {
-			activeWorkspace.getWorkspaceContent().setColorFirst(colorPickerA.getValue(), opacitySpinnerA.getValue());
+	public void setColorFirstEvent
+			(
+					ActionEvent event
+			)
+	{
+		if (actualWorkspace != null)
+		{
+			actualWorkspace.getWorkspaceContent().setColorFirst(
+					colorPickerA.getValue(), opacitySpinnerA.getValue()
+			);
 		}
 	}
 	
+	
 	@Override
-	public void setColorSecondaryEvent(ActionEvent event) {
-		if (activeWorkspace != null) {
-			activeWorkspace.getWorkspaceContent().setColorSecondary(colorPickerB.getValue(), opacitySpinnerB.getValue());
+	public void setColorSecondaryEvent
+			(
+					ActionEvent event
+			)
+	{
+		if (actualWorkspace != null)
+		{
+			actualWorkspace.getWorkspaceContent().setColorSecondary(
+					colorPickerB.getValue(), opacitySpinnerB.getValue()
+			);
 		}
 	}
 	
+	
 	@Override
-	public void addLayerEvent(ActionEvent event) {
-		if (activeWorkspace != null) {
-			activeWorkspace.getWorkspaceContent().addDefaultLayer();
+	public void addLayerEvent
+			(
+					ActionEvent event
+			)
+	{
+		if (actualWorkspace != null)
+		{
+			actualWorkspace.getWorkspaceContent().addDefaultLayer();
 			layerList.refresh();
 		}
 	}
