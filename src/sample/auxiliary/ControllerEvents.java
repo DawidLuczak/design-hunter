@@ -1,4 +1,4 @@
-package sample;
+package sample.auxiliary;
 
 import javafx.event.ActionEvent;
 
