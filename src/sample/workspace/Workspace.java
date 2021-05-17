@@ -1,30 +1,46 @@
 package sample.workspace;
 
-public class Workspace {
+public class Workspace
+{
 	private String title;
 	private int height, width;
 	private WorkspaceContent workspaceContent;
 	
-	public Workspace(String title, int width, int height){
+	
+	public Workspace
+			(
+					String title,
+					int width, int height
+			)
+	{
 		this.title = title;
 		this.height = height;
 		this.width = width;
-		this.workspaceContent = new WorkspaceContent(this);
+		this.workspaceContent =
+				new WorkspaceContent(this);
 	}
 	
-	public WorkspaceContent getWorkspaceContent() {
+	
+	public WorkspaceContent getWorkspaceContent()
+	{
 		return workspaceContent;
 	}
 	
-	public String getTitle() {
+	
+	public String getTitle()
+	{
 		return title;
 	}
 	
-	public int getHeight() {
+	
+	public int getHeight()
+	{
 		return height;
 	}
 	
-	public int getWidth() {
+	
+	public int getWidth()
+	{
 		return width;
 	}
 	
