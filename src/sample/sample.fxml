@@ -53,13 +53,13 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
-<?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.CubicCurve?>
-<?import javafx.scene.shape.Line?>
-<?import javafx.scene.shape.Polygon?>
-<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.CubicCurve?>
 <VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="File">
@@ -94,26 +94,53 @@
     </MenuBar>
    <ToolBar prefHeight="40.0" prefWidth="200.0">
      <items>
-         <ColorPicker id="color1" fx:id="colorPickerA" prefHeight="25.0" prefWidth="100.0" />
+         <ColorPicker fx:id="colorPickerA" prefHeight="25.0" prefWidth="100.0" />
          <Spinner fx:id="opacitySpinnerA" editable="true" prefHeight="25.0" prefWidth="70.0" />
-         <ColorPicker id="color2" fx:id="colorPickerB" prefHeight="25.0" prefWidth="100.0" />
+         <ColorPicker fx:id="colorPickerB" prefHeight="25.0" prefWidth="100.0" />
          <Spinner fx:id="opacitySpinnerB" editable="true" prefHeight="25.0" prefWidth="70.0" />
          <ChoiceBox fx:id="fillTypeBox" prefWidth="100.0" />
          <Spinner fx:id="strokeWidthSpinner" editable="true" prefHeight="25.0" prefWidth="70.0" />
      </items>
    </ToolBar>
-    <SplitPane dividerPositions="0.12806236080178174, 0.7505567928730512" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
-        <AnchorPane prefHeight="552.0" prefWidth="199.0">
+    <SplitPane dividerPositions="0.111358574610245, 0.7505567928730512" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+        <AnchorPane prefHeight="514.0" prefWidth="0.0">
          <children>
-            <Circle fx:id="circleIcon" fill="#b4b4b4" layoutX="25.0" layoutY="25.0" radius="15.0" stroke="BLACK" strokeWidth="2.0" />
-            <Rectangle fx:id="rectangleIcon" fill="#b4b4b4" height="30.0" layoutX="55.0" layoutY="10.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="40.0" />
-            <Polygon fx:id="triangleIcon" fill="#b4b4b4" layoutX="25.0" layoutY="100.0" points="-15.600011825561523, -26.59998321533203, 13.999996185302734, -26.59998321533203, -0.39999961853027344, -54.9999885559082" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" />
-            <Line fx:id="lineIcon" endX="-64.0" endY="14.200004577636719" layoutX="156.0" layoutY="55.0" startX="-98.39999389648438" startY="-6.599979400634766" strokeWidth="3.0" />
-            <CubicCurve fx:id="brushIcon" controlX1="-81.60000610351562" controlX2="-150.00003051757812" controlY1="-90.79999542236328" controlY2="73.19999694824219" endX="-128.00003051757812" endY="-37.99998474121094" fill="#b4b4b4" layoutX="213.0" layoutY="119.0" startX="-150.0" stroke="BLACK" strokeWidth="2.0" />
-            <ToggleButton fx:id="getColorButton" layoutX="11.0" layoutY="140.0" mnemonicParsing="false" text="getPaint" />
+            <ToggleButton fx:id="getColorButton" layoutX="10.0" layoutY="140.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="75.0" text="Get Paint" />
+            <ToggleButton fx:id="rubberButton" layoutX="10.0" layoutY="170.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="75.0" text="Rubber" />
+            <ToggleButton fx:id="rectangleButton" layoutX="50.0" layoutY="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0">
+               <graphic>
+                  <Rectangle fill="#b4b4b4" height="25.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="30.0" />
+               </graphic>
+               <padding>
+                  <Insets bottom="6.0" left="10.0" right="10.0" top="6.0" />
+               </padding>
+            </ToggleButton>
+            <ToggleButton fx:id="circleButton" layoutX="5.0" layoutY="50.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0">
+               <graphic>
+                  <Circle fill="#b4b4b4" radius="13.0" stroke="BLACK" strokeWidth="2.0" />
+               </graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="triangleButton" layoutX="5.0" layoutY="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0">
+               <graphic>
+                  <Polygon fill="#b4b4b4" points="-15.600011825561523, -26.59998321533203, 13.799982070922852, -26.59998321533203, -0.39999961853027344, -54.9999885559082" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" />
+               </graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="lineButton" layoutX="50.0" layoutY="95.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0">
+               <graphic>
+                  <Line endX="-64.0" endY="14.200004577636719" startX="-98.39999389648438" startY="-6.599979400634766" strokeWidth="3.0" />
+               </graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="brushButton" layoutX="50.0" layoutY="50.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0">
+               <graphic>
+                  <CubicCurve controlX1="-83.37835693359375" controlX2="-144.1060333251953" controlY1="-77.17054748535156" controlY2="35.086036682128906" endX="-129.8907470703125" endY="-30.017120361328125" fill="#b4b4b4" startX="-109.80032348632812" startY="-11.910163879394531" stroke="BLACK" strokeWidth="2.0" />
+               </graphic>
+               <padding>
+                  <Insets bottom="5.0" left="10.0" right="9.0" top="5.0" />
+               </padding>
+            </ToggleButton>
          </children>
         </AnchorPane>
-        <AnchorPane style="-fx-background-color: lightgray;">
+        <AnchorPane prefHeight="514.0" prefWidth="584.0" style="-fx-background-color: lightgray;">
          <children>
             <TabPane fx:id="tabPanel" tabClosingPolicy="UNAVAILABLE" />
          </children>
